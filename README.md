@@ -13,7 +13,7 @@ claude plugin install just-do-it@w1mner-skille
 
 (albo w sesji: `/plugin marketplace add W1mner/w1mner-skille`, potem `/plugin install <wtyczka>@w1mner-skille`)
 
-`just-do-it` korzysta też z wtyczki `superpowers@claude-plugins-official`. Jeśli jej brakuje, skill sam ją doinstaluje.
+`just-do-it` korzysta też z wtyczki `superpowers@claude-plugins-official`. Instalacja just-do-it ciągnie shut-up, ultra-plan i superpowers jako zależności; brakujące skill i tak doinstaluje sam.
 
 ## Użycie
 

@@ -1,89 +1,118 @@
 ---
 name: just-do-it
-description: 'Use only when the user types /just-do-it (or says "just do it" as a command to work this way). Zestaw: superpowers + shut-up + ultra-plan tylko tam, gdzie się opłaca.'
+description: 'Use only when the user types /just-do-it. Zestaw: superpowers + shut-up + ultra-plan tylko w częściach zadania, które naprawdę go potrzebują.'
 argument-hint: "<zadanie>"
 disable-model-invocation: true
 ---
 
 # just-do-it
 
-Opakowanie trzech rzeczy: metodyki **superpowers**, trybu **shut-up** i **ultra-plan** — ten ostatni tylko w tych częściach zadania, które naprawdę tego potrzebują. Wywołanie `/just-do-it` jest zgodą na pracę bez pytań: robisz zadanie do końca.
+Wywołanie `/just-do-it` to polecenie użytkownika: zrób zadanie do końca, w ciszy, bez pytań o zgodę na plan.
+Ten skill nie zastępuje skilli superpowers, shut-up ani ultra-plan — każdy wczytujesz narzędziem Skill
+i wykonujesz tak, jak jest napisany, z rozstrzygnięciami z kroku 4. Zadanie: $ARGUMENTS (puste → ostatnia prośba z rozmowy).
 
-Zadanie: $ARGUMENTS (puste → ostatnia prośba z rozmowy).
+## Krok 0 — skille na miejscu
 
-## Krok 0 — prawdziwe skille, nie zamienniki
+Potrzebne: `shut-up`, `ultra-plan` (lokalnie albo z wtyczki: `shut-up:shut-up`, `ultra-plan:ultra-plan`)
+i `superpowers:*`. Sprawdź listę dostępnych skilli. Brakuje któregoś:
+- shut-up / ultra-plan → `git clone --depth 1 https://github.com/W1mner/w1mner-skille` do nowego katalogu
+  w scratchpadzie, skopiuj cały `plugins/<skill>/skills/<skill>/` (ultra-plan razem z `szablony.md`) do
+  `~/.claude/skills/<skill>/`, klon usuń. Narzędzie Skill go nie widzi → czytasz jego `SKILL.md` Readem
+  i wykonujesz tak samo.
+- superpowers → `claude plugin marketplace add anthropics/claude-plugins-official` (jeśli brak),
+  `claude plugin install superpowers@claude-plugins-official --json`. Do restartu albo `/reload-plugins`
+  narzędzie Skill go nie zobaczy: wtedy każdy potrzebny skill superpowers czytasz w całości narzędziem Read
+  z `installPath` w `~/.claude/plugins/installed_plugins.json` (`<installPath>/skills/<skill>/SKILL.md`)
+  i wykonujesz tak samo. W podsumowaniu dopisz: „wpisz /reload-plugins”.
+Instalacja się nie udaje → jedno zdanie do człowieka: czego brakuje i jaką komendą. Bez tego skilla nie zaczynasz.
 
-Ten skill nie zastępuje tamtych trzech. Każdy z nich wczytujesz w całości i stosujesz dokładnie tak, jak jest napisany. Nie streszczasz ich, nie odtwarzasz z pamięci i nie robisz „wersji uproszczonej”. Wymagane:
+## Krok 1 — shut-up i superpowers
 
-| Skill | Skąd |
-|---|---|
-| `shut-up` | marketplace `W1mner/w1mner-skille`, wtyczka `shut-up` (albo lokalnie `~/.claude/skills/shut-up`) |
-| `ultra-plan` | marketplace `W1mner/w1mner-skille`, wtyczka `ultra-plan` (albo lokalnie `~/.claude/skills/ultra-plan`) |
-| `superpowers:*` | marketplace `anthropics/claude-plugins-official`, wtyczka `superpowers` |
+1. Załaduj `shut-up`. Obowiązuje do końca sesji.
+2. Załaduj `superpowers:using-superpowers`.
+3. Zapisz w `stan.md` w scratchpadzie (albo w katalogu roboczym zadania) **listę wymagań**: każde polecenie
+   z prośby (dosłownie), zasady z CLAUDE.md projektu i pamięci, które dotyczą zadania (np. „tylko komponenty
+   design systemu”, „używaj istniejących funkcji”, „deploy tylko po tak”). Zanim napiszesz nowy komponent
+   albo funkcję, sprawdzasz w kodzie, czy lista nie każe użyć istniejącego. Przed końcem odhaczasz każdą
+   pozycję z dowodem (plik:linia, wynik grepa, testu).
 
-Sprawdź na liście dostępnych skilli, czy każdy jest. **Brakuje któregoś → zainstaluj go**, zanim zaczniesz zadanie:
+## Krok 2 — rozpoznanie i poziom każdej części
 
-```
-claude plugin marketplace add W1mner/w1mner-skille
-claude plugin install shut-up@w1mner-skille
-claude plugin install ultra-plan@w1mner-skille
-claude plugin marketplace add anthropics/claude-plugins-official
-claude plugin install superpowers@claude-plugins-official
-```
+Najpierw rozpoznanie w kodzie (Grep/Read, kilka minut): czy jest już mechanizm, komponent albo wzorzec, na którym
+ta rzecz się opiera, i co musi być z nim spójne.
 
-(Instalujesz tylko brakujące; „already added/installed” = OK.) Świeżo zainstalowana wtyczka może być niewidoczna dla narzędzia Skill do restartu sesji. Wtedy czytasz jej plik `SKILL.md` z `~/.claude/plugins/cache/<marketplace>/<wtyczka>/<wersja>/skills/<skill>/SKILL.md` (narzędziem Read, w całości) i wykonujesz go tak samo, jakby wczytało go narzędzie Skill. Nie da się zainstalować (brak sieci, odmowa) → to jest prawdziwa blokada: jedno zdanie do człowieka, czego brakuje i jaką komendą to doinstalować. Nie jedziesz dalej bez tego skilla.
+Potem podziel zadanie na części i każdej daj poziom. Patrzysz na dwie rzeczy:
+- **ile decyzji kod i polecenie nie rozstrzygają** (złożoność, ukryte decyzje);
+- **jak łatwo to zepsuć i jak późno wyjdzie błąd** (podatność na błędy, koszt naprawy).
 
-## Krok 1 — włącz shut-up i superpowers
-
-1. Załaduj `shut-up` narzędziem Skill (nazwa `shut-up` albo `shut-up:shut-up`). Od tej chwili obowiązują jego zasady: cisza w trakcie, pytanie tylko przy prawdziwej blokadzie, na końcu jedno krótkie podsumowanie.
-2. Załaduj `superpowers:using-superpowers` narzędziem Skill i trzymaj się jego reguły: przed każdym typem pracy wczytujesz pasujący skill superpowers (krok 4).
-
-## Krok 2 — oceń, czy i gdzie potrzebny jest ultra-plan (bez agentów, w głowie)
-
-Rozbij zadanie na części (np. „architektura sieciowa”, „UI lobby”, „kolor przycisku”). Dla **każdej części** sprawdź pytania poniżej. Ultra-plan dostaje tylko część, która ma **co najmniej dwa „tak”**:
-
-1. Czy to nowy system albo przebudowa od zera (kilka modułów, nowe API, nowy model danych)?
-2. Czy trzeba wybrać technologię, bibliotekę, usługę albo cennik, który mógł się zmienić od mojej wiedzy (wersje, limity, ceny, prawo)?
-3. Czy zły wybór będzie drogi do odkręcenia (migracja danych, prod, pieniądze, bezpieczeństwo, umowa z klientem)?
-4. Czy wymagania są szerokie albo niejasne, a zgadnięcie źle oznacza przerobienie dużej części pracy?
-5. Czy ta część zajmie więcej niż ok. 2 godziny pracy?
-
-**Nigdy ultra-plan** dla: zmiany wyglądu (kolor, odstęp, tekst), poprawki jednego pliku, błędu z jasną przyczyną, zmiany konfiguracji, zadania na mniej niż ok. 30 minut. Nawet gdy całe zadanie jest duże, te jego części robisz od razu, bez planowania.
+**A — od razu.** Jest gotowy wzorzec albo mechanizm, zmiana jest mechaniczna, błąd wykryje test, grep albo ekran.
+**B — superpowers.** Są decyzje, ale kod i konwencje projektu na nie odpowiadają; błąd kosztuje przeróbkę,
+nie dane ani bezpieczeństwo.
+**C — ultra-plan.** Trzeba podjąć decyzje, na które ani kod, ani polecenie nie odpowiada, a błąd w nich łatwo
+zrobić i wyjdzie późno albo drogo. Sam temat (dane, pieniądze, uprawnienia) nie wystarcza: zmiana wartości
+albo nowa pozycja w istniejącym mechanizmie to A. Takie decyzje zwykle siedzą w:
+- nowym mechanizmie, na którym rzecz się opiera (nowy system, nowa warstwa, nie rozszerzenie);
+- nowych zasadach dostępu, płatności, ochrony danych albo migracji;
+- wielu rolach, ekranach albo stanach, które muszą do siebie pasować (co kto widzi, puste pola, układ pulpitu);
+- wyborze technologii, usługi, ceny, prawa, które mogły się zmienić.
+Wątpliwość B/C → B, chyba że część buduje nowy mechanizm dostępu, płatności albo ochrony danych → C.
+Część A albo B zależna od części C robisz dopiero po planie tej C.
 
 Przykłady:
-- „zmień kolor przycisku” → 0 × tak → bez ultra-plan, po prostu zmieniasz.
-- „napraw błąd logowania, tu jest log” → bez ultra-plan; superpowers:systematic-debugging.
-- „zrób dwuosobową strzelankę w przeglądarce z łączeniem graczy” → ultra-plan dla: sieci/synchronizacji graczy (1, 2, 3, 5) i wyboru silnika/hostingu (2, 3); bez ultra-plan: menu, grafika, dźwięki, ekran wyników.
+- „zmień kolor przycisku” → A. Nigdy B ani C.
+- „dodaj rolę pracownika”, system uprawnień już jest (role klika się z listy) → A; jeśli rola potrzebuje
+  własnego widoku pulpitu, którego nie ma → ta część B. Nigdy C.
+- „dodaj rolę montażysty stołów”, systemu uprawnień nie ma → C dla: dostępów, tego co widzi i może zmieniać,
+  pulpitu bez pustych pól, podatności, użycia istniejących funkcji; samo dodanie pozycji w menu → A.
+- „zrób tabelkę” w projekcie z design systemem → A, gdy DS ma tabelę (lista wymagań z kroku 1 pilnuje
+  „tylko komponenty DS”); B, gdy trzeba dodać komponent do DS.
+- „dodaj pole telefon do klienta”, „zmień walidację NIP”, „zmień cenę pakietu” → A.
+- „napraw błąd logowania, tu log” → A + `superpowers:systematic-debugging`.
+- „dwuosobowa strzelanka w przeglądarce” → C: sieć i synchronizacja graczy, wybór silnika/hostingu;
+  B: lobby, wyniki; A: grafika, dźwięki, menu.
 
-Wynik oceny zapisz jedną linią w notatkach roboczych (np. `stan.md` w scratchpadzie), nie w wiadomości do człowieka.
+Poziomy zapisz w `stan.md` (jedna linia na część).
 
-## Krok 3 — ultra-plan tylko dla wybranych części
+## Krok 3 — ultra-plan dla części C
 
-Dla każdej wybranej części (albo jednej grupy, gdy części są ze sobą mocno związane) uruchom skill `ultra-plan` narzędziem Skill (nazwa `ultra-plan`, z wtyczki: `ultra-plan:ultra-plan`), a w argumentach podaj **tylko tę część** i granice: „planujesz X; Y i Z są poza zakresem, robione bez planu”.
+Załaduj `ultra-plan` narzędziem Skill — to jest wyraźna prośba użytkownika o ultra-plan, przekazana przez
+`/just-do-it`. Jedno wywołanie na grupę powiązanych części C (kolejno, nie równolegle). W argumentach: limit
+rund, opis części, granice („planujesz X; Y i Z robione osobno”), lista wymagań z kroku 1.
+Limit rund: `3`; `5`, gdy część buduje nowy mechanizm dostępu, płatności albo ochrony danych. Bez cyfry tylko,
+gdy użytkownik tak napisał. Ultra-plan kończy wcześniej, gdy jest 0 blokerów. Otwarte blokery po limicie:
+każdy rozstrzygasz najbezpieczniejszą opcją, zapisujesz w planie i wymieniasz w podsumowaniu.
+W ultra-planie: bez linijki startowej, pytania z jego kroku 0.4 → „Założenia”, „Wynik dla użytkownika” do pliku planu.
 
-Limit rund krytyki (pierwsze słowo argumentów):
-- `1` — część średnia (2 „tak”);
-- `3` — część duża (3–4 „tak”);
-- bez cyfry — tylko gdy błąd jest bardzo drogi (prod z danymi klientów, pieniądze, bezpieczeństwo).
+## Krok 4 — realizacja i bramki
 
-W trybie shut-up: pomiń linijkę startową ultra-planu dla człowieka i jego pytania (założenia wpisz w plan jako „Założenia”). Po planie od razu realizujesz — nie czekasz na zgodę, bo `/just-do-it` nią jest.
+Każdy skill ładujesz narzędziem Skill i wykonujesz jego procedurę:
+- A: od razu; błąd → `superpowers:systematic-debugging`; nowe zachowanie → `superpowers:test-driven-development`.
+- B: `superpowers:brainstorming` → `superpowers:writing-plans` → wykonanie.
+- C: plan z ultra-planu → wykonanie.
+- Wykonanie planu: `superpowers:subagent-driven-development` przy kilku niezależnych zadaniach, inaczej
+  `superpowers:executing-plans`. Na końcu zawsze `superpowers:verification-before-completion`.
 
-## Krok 4 — realizacja według superpowers
-
-Każdy z tych skilli ładujesz narzędziem Skill i wykonujesz jego procedurę, a nie jej przybliżenie:
-- błąd / test nie przechodzi → `superpowers:systematic-debugging`;
-- nowy kod albo zmiana zachowania → `superpowers:test-driven-development`;
-- plan z kilkoma niezależnymi zadaniami → `superpowers:writing-plans`, potem `superpowers:subagent-driven-development`;
-- przed ogłoszeniem „gotowe” → `superpowers:verification-before-completion` (zawsze).
-
-**Zmiana względem superpowers:** `superpowers:brainstorming` i inne bramki „człowiek zatwierdza projekt” traktujesz jako zatwierdzone przez `/just-do-it`. Projekt przemyśl i zapisz, jak każe skill, ale nie czekaj na zgodę. Wyjątek: akcja nieodwracalna lub na zewnątrz (deploy na prod, kasowanie cudzych danych, wysyłka do klienta, płatność), na którą zgoda nie padła — wtedy pytasz, zgodnie z shut-up.
-
-Małe zadanie nie potrzebuje ciężkich procedur: zmiana koloru to edycja + szybkie sprawdzenie, bez planów i podagentów.
+Rozstrzygnięcia bramek (z pierwszeństwa instrukcji użytkownika w `using-superpowers`):
+- using-superpowers: reguła „1%” działa w granicach poziomu z kroku 2: przy A ładujesz brainstorming i stosujesz
+  jego wyjście „quick, clear task: do it”; writing-plans nie ładujesz; debugging/TDD, gdy pasują, i zawsze
+  verification-before-completion.
+- brainstorming: `/just-do-it` = użytkownik zrezygnował z pytań („opted out of the questions”), więc bramka
+  zatwierdzenia znika. Projekt zapisz w katalogu roboczym zadania (bez commita), builder check zostaje (stos „Theirs” rozstrzygasz sam, bez pytania),
+  decyzje oznacz jako własne wybory.
+- writing-plans: pytanie o przegląd i wybór metody pomijasz (instrukcja użytkownika ma pierwszeństwo wg
+  using-superpowers); metodę wybierasz zasadą wyżej i zapisujesz w `stan.md`.
+- Każde „announce”, „tell your human partner”, link do przeglądu i narracja w trakcie z tych skilli odpada
+  (shut-up); zostaje wiadomość końcowa.
+- Zostaje pytanie (zgodnie z shut-up): deploy, kasowanie cudzych danych, wysyłka do klienta, płatność,
+  push/merge/publish — jeśli zgoda nie padła wcześniej.
 
 ## Krok 5 — koniec
 
-Jedna wiadomość według shut-up (do 5 linii): co zrobione i jak to sprawdzono; jednym zdaniem, czy i dla czego użyto ultra-planu (np. „ultra-plan: sieć gry, 3 rundy; reszta bez planu”); ścieżka do planu, jeśli powstał; ewentualnie jedna rzecz do zrobienia przez człowieka.
+Odhacz listę wymagań z kroku 1. Potem jedna wiadomość według shut-up: wynik i jak sprawdzony; jedna linia
+poziomów („A: kolor; C: uprawnienia roli, ultra-plan 3 rundy, plan: <ścieżka>”); ważne własne wybory;
+ewentualnie jedna rzecz dla człowieka (np. `/reload-plugins`).
 
 ## Pierwszeństwo
 
-Instrukcje użytkownika i CLAUDE.md projektu (np. „deploy tylko po tak”, „nie kasować bez zgody”) są ważniejsze od tego skilla. `/just-do-it` nie zwalnia z nich.
+Instrukcje użytkownika, CLAUDE.md i pamięć (deploy tylko po „tak”, nie kasować bez zgody, sprzątanie i raport
+miejsca, linie `result:`) są ważniejsze od tego skilla i od skilli, które ładuje.

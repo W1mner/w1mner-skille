@@ -4,6 +4,9 @@
   "owner": {
     "name": "W1mner"
   },
+  "allowCrossMarketplaceDependenciesOn": [
+    "claude-plugins-official"
+  ],
   "plugins": [
     {
       "name": "ultra-plan",
