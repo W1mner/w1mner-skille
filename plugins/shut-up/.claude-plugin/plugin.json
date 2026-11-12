@@ -1,0 +1,6 @@
+{
+  "name": "shut-up",
+  "description": "Tryb zamknij sie i rob: zero wiadomosci w trakcie pracy, pytania tylko przy prawdziwej blokadzie, na koncu krotkie podsumowanie.",
+  "version": "1.0.0",
+  "author": { "name": "W1mner" }
+}

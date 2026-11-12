@@ -1,12 +1,24 @@
 {
   "name": "w1mner-skille",
   "description": "Skille Arcasto (W1mner) dla Claude Code",
-  "owner": { "name": "W1mner" },
+  "owner": {
+    "name": "W1mner"
+  },
   "plugins": [
     {
       "name": "ultra-plan",
       "source": "./plugins/ultra-plan",
       "description": "Ultra-plan: swiezy research, plan i rundy krytyki z wagami katow, az do 0 blokerow"
+    },
+    {
+      "name": "shut-up",
+      "source": "./plugins/shut-up",
+      "description": "Tryb zamknij sie i rob: cisza w trakcie pracy, na koncu krotkie podsumowanie"
+    },
+    {
+      "name": "just-do-it",
+      "source": "./plugins/just-do-it",
+      "description": "superpowers + shut-up + ultra-plan tylko tam, gdzie sie oplaca"
     }
   ]
 }
