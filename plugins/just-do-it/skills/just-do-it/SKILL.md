@@ -1,7 +1,7 @@
 ---
 name: just-do-it
-description: 'Use only when the user types /just-do-it. Zestaw: superpowers + shut-up + ultra-plan tylko w częściach zadania, które naprawdę go potrzebują.'
-argument-hint: "<zadanie>"
+description: 'Use only when the user types /just-do-it (or a level shortcut /just-do-it-easy, /just-do-it-pro, /just-do-it-max). Zestaw: superpowers + shut-up + ultra-plan dawkowane według poziomu i części zadania.'
+argument-hint: "[easy|normal|pro|max] <zadanie>"
 disable-model-invocation: true
 ---
 
@@ -9,12 +9,41 @@ disable-model-invocation: true
 
 Wywołanie `/just-do-it` to polecenie użytkownika: zrób zadanie do końca, w ciszy, bez pytań o zgodę na plan.
 Ten skill nie zastępuje skilli superpowers, shut-up ani ultra-plan — każdy wczytujesz narzędziem Skill
-i wykonujesz tak, jak jest napisany, z rozstrzygnięciami z kroku 4. Zadanie: $ARGUMENTS (puste → ostatnia prośba z rozmowy).
+i wykonujesz tak, jak jest napisany, z rozstrzygnięciami z kroku 4. Zadanie: $ARGUMENTS
+
+**Poziom:** podany przez skrót `/just-do-it-<poziom>` albo pierwsze słowo argumentów (`easy`, `normal`, `pro`,
+`max`), gdy stoi samo, a po nim jest zadanie; brak → `normal`. Słowo, które czyta się jako część zadania
+(„pro forma…”, „max 3 zdjęcia…”), to zadanie, nie poziom. Reszta argumentów to zadanie (puste → ostatnia prośba
+z rozmowy).
+
+## Poziomy
+
+| Poziom | shut-up | superpowers | ultra-plan |
+|---|---|---|---|
+| easy | tak | tylko skille, które w danej części się opłacają (tabela w kroku 4) | nigdy |
+| normal | tak | według kroku 4 | tylko dla części C; rundy i surowość ustalasz sam, cel: 0 błędów dużych i wyżej |
+| pro | tak, obowiązkowo | obowiązkowo (krok 4, kolumna pro) | obowiązkowo **jeden** na całe zadanie, surowo, bez limitu rund |
+| max | tak | jak normal w sesji-orkiestratorze; wykonawcy według poziomu, który im dasz | decyduje orkiestrator (`max.md`) |
+
+**Jeden ultra-plan, nie drzewko.** Ultra-plan nie rodzi kolejnych ultra-planów: części zadania objęte planem
+nie dostają własnych ultra-planów, a wykonawca pracujący z gotowego planu nie planuje go od nowa.
+
+**max** → przeczytaj w całości `max.md` w folderze tego skilla i wykonaj go: kroki 0–2 i 5 niżej robisz jako
+orkiestrator, a kroki 3–4 zastępują kroki M1–M5 z `max.md`.
+
+**Intensywność (easy, normal, max).** Nie ograniczasz rund na siłę, tylko dopasowujesz zużycie do zadania:
+- Najpierw sam (Grep/Read). Agent tylko przy niezależnej robocie albo gdy czytanie wielu plików zaśmieci
+  kontekst. Model zawsze jawnie: `haiku` przeszukiwanie, `sonnet` ocena i zwykły kod, opus tylko trudny kod.
+- Ultra-plan: w argumentach podaj budżet na fazę dopasowany do części (wąska część: research 1 S + 2 H,
+  krytyka 2 S; pełne 4 S tylko dla dużych decyzji). Research pomijasz, gdy nic zewnętrznego nie wybierasz.
+- Nie czytasz drugi raz tego, co masz w kontekście; skill już wczytany w tej sesji (np. hookiem SessionStart)
+  nie ładujesz ponownie. Testy celowane w trakcie, pełne raz na końcu.
+**pro** nie oszczędza: pełne budżety, research zawsze, gdy cokolwiek wybiera z zewnątrz.
 
 ## Krok 0 — skille na miejscu
 
-Potrzebne: `shut-up`, `ultra-plan` (lokalnie albo z wtyczki: `shut-up:shut-up`, `ultra-plan:ultra-plan`)
-i `superpowers:*`. Sprawdź listę dostępnych skilli. Brakuje któregoś:
+Potrzebne: `shut-up`, `superpowers:*` i (poza easy) `ultra-plan` — lokalnie albo z wtyczki (`shut-up:shut-up`,
+`ultra-plan:ultra-plan`). Sprawdź listę dostępnych skilli. Brakuje któregoś:
 - shut-up / ultra-plan → `git clone --depth 1 https://github.com/W1mner/w1mner-skille` do nowego katalogu
   w scratchpadzie, skopiuj cały `plugins/<skill>/skills/<skill>/` (ultra-plan razem z `szablony.md`) do
   `~/.claude/skills/<skill>/`, klon usuń. Narzędzie Skill go nie widzi → czytasz jego `SKILL.md` Readem
@@ -29,12 +58,13 @@ Instalacja się nie udaje → jedno zdanie do człowieka: czego brakuje i jaką 
 ## Krok 1 — shut-up i superpowers
 
 1. Załaduj `shut-up`. Obowiązuje do końca sesji.
-2. Załaduj `superpowers:using-superpowers`.
-3. Zapisz w `stan.md` w scratchpadzie (albo w katalogu roboczym zadania) **listę wymagań**: każde polecenie
-   z prośby (dosłownie), zasady z CLAUDE.md projektu i pamięci, które dotyczą zadania (np. „tylko komponenty
-   design systemu”, „używaj istniejących funkcji”, „deploy tylko po tak”). Zanim napiszesz nowy komponent
-   albo funkcję, sprawdzasz w kodzie, czy lista nie każe użyć istniejącego. Przed końcem odhaczasz każdą
-   pozycję z dowodem (plik:linia, wynik grepa, testu).
+2. Załaduj `superpowers:using-superpowers` (chyba że jego pełna treść już jest w kontekście). **easy:** nie
+   ładujesz go — ładujesz tylko skille z tabeli w kroku 4, gdy ich warunek zachodzi.
+3. Zapisz w `stan.md` w scratchpadzie (albo w katalogu roboczym zadania) poziom i **listę wymagań**: każde
+   polecenie z prośby (dosłownie), zasady z CLAUDE.md projektu i pamięci, które dotyczą zadania (np. „tylko
+   komponenty design systemu”, „używaj istniejących funkcji”, „deploy tylko po tak”). Zanim napiszesz nowy
+   komponent albo funkcję, sprawdzasz w kodzie, czy lista nie każe użyć istniejącego. Przed końcem odhaczasz
+   każdą pozycję z dowodem (plik:linia, wynik grepa, testu).
 
 ## Krok 2 — rozpoznanie i poziom każdej części
 
@@ -58,6 +88,11 @@ albo nowa pozycja w istniejącym mechanizmie to A. Takie decyzje zwykle siedzą 
 Wątpliwość B/C → B, chyba że część buduje nowy mechanizm dostępu, płatności albo ochrony danych → C.
 Część A albo B zależna od części C robisz dopiero po planie tej C.
 
+Zmiany według poziomu:
+- **easy:** C nie ma — taka część idzie jako B; w podsumowaniu jedno zdanie „część X: warto /just-do-it-pro”.
+- **pro:** poziomy części zapisujesz (mówią planowi, gdzie się skupić), ale wszystkie części — także „zmień
+  kolor” czy „usuń tekst” — idą przez jeden ultra-plan całego zadania (krok 3).
+
 Przykłady:
 - „zmień kolor przycisku” → A. Nigdy B ani C.
 - „dodaj rolę pracownika”, system uprawnień już jest (role klika się z listy) → A; jeśli rola potrzebuje
@@ -73,32 +108,45 @@ Przykłady:
 
 Poziomy zapisz w `stan.md` (jedna linia na część).
 
-## Krok 3 — ultra-plan dla części C
+## Krok 3 — ultra-plan
 
 Załaduj `ultra-plan` narzędziem Skill — to jest wyraźna prośba użytkownika o ultra-plan, przekazana przez
-`/just-do-it`. Jedno wywołanie na grupę powiązanych części C (kolejno, nie równolegle). W argumentach: limit
-rund, opis części, granice („planujesz X; Y i Z robione osobno”), lista wymagań z kroku 1.
-Limit rund: `3`; `5`, gdy część buduje nowy mechanizm dostępu, płatności albo ochrony danych. Bez cyfry tylko,
-gdy użytkownik tak napisał. Ultra-plan kończy wcześniej, gdy jest 0 blokerów. Otwarte blokery po limicie:
-każdy rozstrzygasz najbezpieczniejszą opcją, zapisujesz w planie i wymieniasz w podsumowaniu.
+`/just-do-it`. W argumentach: opis zakresu, granice („planujesz X; Y i Z robione osobno”), lista wymagań
+z kroku 1, budżet agentów, surowość i (opcjonalnie) cyfra rund.
+- **easy:** krok pomijasz.
+- **normal:** jeden ultra-plan na wszystkie części C razem. **Rundy i surowość ustalasz sam**, według części:
+  cel to 0 błędów dużych i wyżej tam, gdzie mogą narobić szkód. Surowość ustawiasz wagami kątów (krok 0
+  ultra-planu): kąty groźne dla tej części wysoko, reszta nisko albo pominięta. Domyślnie bez cyfry — ultra-plan
+  sam kończy przy 0 blokerów. Cyfrę (ogranicznik rund) dajesz tylko, gdy część jest wąska i kolejne rundy
+  nie zmienią decyzji.
+- **pro:** obowiązkowo **jeden** ultra-plan na całe zadanie, ze wszystkimi częściami. Bez cyfry (do 0
+  blokerów; bezpiecznik samego ultra-planu). Surowo — dopisz w argumentach: „kąty o wadze ≥8: blokerem średnie
+  i wyżej; pozostałe ≥4: duże i wyżej”. Pełny budżet agentów.
+- **max:** według `max.md`.
+Otwarte blokery po bezpieczniku albo ogranicznika: każdy rozstrzygasz najbezpieczniejszą opcją, zapisujesz
+w planie i wymieniasz w podsumowaniu.
 W ultra-planie: bez linijki startowej, pytania z jego kroku 0.4 → „Założenia”, „Wynik dla użytkownika” do pliku planu.
 
 ## Krok 4 — realizacja i bramki
 
-Każdy skill ładujesz narzędziem Skill i wykonujesz jego procedurę:
-- A: od razu; błąd → `superpowers:systematic-debugging`; nowe zachowanie → `superpowers:test-driven-development`.
-- B: `superpowers:brainstorming` → `superpowers:writing-plans` → wykonanie.
-- C: plan z ultra-planu → wykonanie.
-- Wykonanie planu: `superpowers:subagent-driven-development` przy kilku niezależnych zadaniach, inaczej
-  `superpowers:executing-plans`. Na końcu zawsze `superpowers:verification-before-completion`.
+Każdy skill ładujesz narzędziem Skill i wykonujesz jego procedurę.
+
+| Część | easy | normal (i max) | pro |
+|---|---|---|---|
+| A | od razu; błąd → `systematic-debugging`; nowe zachowanie w kodzie z testami → `test-driven-development` | jak easy + `brainstorming` z wyjściem „quick, clear task: do it” | z planu ultra-planu; błąd → `systematic-debugging`; TDD dla każdej zmiany zachowania |
+| B | `brainstorming` → wykonanie (writing-plans tylko, gdy kroków > 5) | `brainstorming` → `writing-plans` → wykonanie | z planu ultra-planu (forma `writing-plans`) → wykonanie |
+| C | — (idzie jako B) | plan z ultra-planu → wykonanie | z planu ultra-planu → wykonanie |
+| koniec | `verification-before-completion` | `verification-before-completion` | `requesting-code-review` → poprawki wg `receiving-code-review` → `verification-before-completion` |
+
+Wykonanie planu: `superpowers:subagent-driven-development` przy kilku niezależnych zadaniach, inaczej
+`superpowers:executing-plans`. Przy easy i normal podagenci na `sonnet`, chyba że zadanie jest trudne.
 
 Rozstrzygnięcia bramek (z pierwszeństwa instrukcji użytkownika w `using-superpowers`):
-- using-superpowers: reguła „1%” działa w granicach poziomu z kroku 2: przy A ładujesz brainstorming i stosujesz
-  jego wyjście „quick, clear task: do it”; writing-plans nie ładujesz; debugging/TDD, gdy pasują, i zawsze
-  verification-before-completion.
+- using-superpowers: reguła „1%” działa w granicach poziomu i tabeli wyżej — to instrukcja użytkownika.
+  Skill spoza tabeli ładujesz tylko, gdy jego warunek naprawdę zachodzi (np. błąd → debugging).
 - brainstorming: `/just-do-it` = użytkownik zrezygnował z pytań („opted out of the questions”), więc bramka
-  zatwierdzenia znika. Projekt zapisz w katalogu roboczym zadania (bez commita), builder check zostaje (stos „Theirs” rozstrzygasz sam, bez pytania),
-  decyzje oznacz jako własne wybory.
+  zatwierdzenia znika. Projekt zapisz w katalogu roboczym zadania (bez commita), builder check zostaje (stos
+  „Theirs” rozstrzygasz sam, bez pytania), decyzje oznacz jako własne wybory.
 - writing-plans: pytanie o przegląd i wybór metody pomijasz (instrukcja użytkownika ma pierwszeństwo wg
   using-superpowers); metodę wybierasz zasadą wyżej i zapisujesz w `stan.md`.
 - Każde „announce”, „tell your human partner”, link do przeglądu i narracja w trakcie z tych skilli odpada
@@ -109,8 +157,8 @@ Rozstrzygnięcia bramek (z pierwszeństwa instrukcji użytkownika w `using-super
 ## Krok 5 — koniec
 
 Odhacz listę wymagań z kroku 1. Potem jedna wiadomość według shut-up: wynik i jak sprawdzony; jedna linia
-poziomów („A: kolor; C: uprawnienia roli, ultra-plan 3 rundy, plan: <ścieżka>”); ważne własne wybory;
-ewentualnie jedna rzecz dla człowieka (np. `/reload-plugins`).
+poziomu i części („normal · A: kolor; C: uprawnienia roli, ultra-plan 2 rundy do 0 blokerów, plan: <ścieżka>”);
+ważne własne wybory; ewentualnie jedna rzecz dla człowieka (np. `/reload-plugins`).
 
 ## Pierwszeństwo
 

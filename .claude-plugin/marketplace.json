@@ -21,7 +21,7 @@
     {
       "name": "just-do-it",
       "source": "./plugins/just-do-it",
-      "description": "superpowers + shut-up + ultra-plan tylko tam, gdzie sie oplaca"
+      "description": "superpowers + shut-up + ultra-plan: poziomy easy, normal, pro, max (orkiestrator sesji)"
     }
   ]
 }

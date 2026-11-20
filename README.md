@@ -20,7 +20,10 @@ claude plugin install just-do-it@w1mner-skille
 - `/ultra-plan:ultra-plan <zadanie>`: research, plan i krytyka aż do 0 blokerów (bezpiecznik 6 rund)
 - `/ultra-plan:ultra-plan-1 <zadanie>`, `-3`, `-5`: to samo z limitem rund krytyki
 - `/shut-up:shut-up`: Claude pracuje w ciszy i odzywa się raz, na końcu. Wyłączasz słowem „gadaj”.
-- `/just-do-it:just-do-it <zadanie>`: shut-up + superpowers, a ultra-plan tylko dla tych części zadania, które naprawdę go potrzebują (nie dla zmiany koloru przycisku)
+- `/just-do-it:just-do-it <zadanie>` (normal): shut-up + superpowers, ultra-plan tylko dla trudnych części; ile rund i jak surowo, decyduje agent (cel: 0 błędów dużych i wyżej)
+- `/just-do-it:just-do-it-easy <zadanie>`: oszczędnie, tylko potrzebne skille superpowers, bez ultra-planu
+- `/just-do-it:just-do-it-pro <zadanie>`: wszystkie 3 skille obowiązkowo, jeden surowy ultra-plan na całe zadanie, bez limitu rund
+- `/just-do-it:just-do-it-max <zadanie>`: orkiestrator: planuje, dzieli pracę na inne sesje bez konfliktów w gałęziach i numeracji, scala; sam decyduje, gdzie ultra-plan
 
 ## Aktualizacja
 
