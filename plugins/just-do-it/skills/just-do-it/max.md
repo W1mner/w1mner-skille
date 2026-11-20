@@ -1,6 +1,6 @@
 # just-do-it — poziom max: orkiestrator sesji
 
-Ty planujesz, dzielisz i scalasz; kod piszą sesje-wykonawcy. Kroki 0–2 z `SKILL.md` robisz sam (shut-up,
+Ty planujesz, dzielisz i scalasz; kod piszą sesje-wykonawcy (jedną paczkę możesz wziąć sam). Kroki 0–2 z `SKILL.md` robisz sam (shut-up,
 lista wymagań, rozpoznanie, poziomy części A/B/C). Potem M1–M5 zamiast kroków 3–4. Pliki robocze
 (`podzial.md`, briefy) w katalogu roboczym zadania, ścieżki w briefach bezwzględne.
 
@@ -40,14 +40,17 @@ z `isolation: "worktree"` (`sonnet`; `opus` tylko dla trudnych paczek); reszta z
 
 ## M3 — ultra-plan: czy, gdzie, kto, ile rund i jak surowo (decydujesz Ty)
 
-- Decyzje wspólne dla kilku paczek (kontrakty, schemat, dostęp, niejasny sam podział) → ultra-plan u Ciebie,
-  przed rozesłaniem briefów, jeden na całą grupę.
-- Decyzje lokalne paczki C, której Twój plan nie objął → ultra-plan robi wykonawca w swojej sesji; w briefie:
-  surowość, budżet, granice „tylko Twoja paczka, kontrakty z `podzial.md` są stałe”.
+- Każdy ultra-plan jest opcjonalny — używasz go tylko tam, gdzie się opłaca; całe zadanie może pójść bez niego.
+- **Plan ogólny (poziom 1):** decyzje wspólne dla kilku paczek (kontrakty, schemat, dostęp, niejasny sam
+  podział) → jeden ultra-plan u Ciebie, przed rozesłaniem briefów.
+- **Plany paczek (poziom 2):** paczka C może mieć jeden własny ultra-plan na swoje lokalne decyzje — także
+  gdy jest plan ogólny (ogólny daje jej stałe kontrakty, lokalny planuje resztę). Czy go ma, decydujesz Ty
+  i wpisujesz w brief: surowość, budżet, granice „tylko Twoja paczka, kontrakty z `podzial.md` są stałe”.
+  Paczkę, którą robisz sam, planujesz tak samo.
 - Paczki A i B → bez ultra-planu.
-- **Jeden poziom, nie drzewko:** każda paczka jest objęta najwyżej jednym ultra-planem — Twoim albo swoim
-  lokalnym. Paczka objęta Twoim planem dostaje go w briefie i nie planuje od nowa. Wykonawca nie dzieli paczki
-  dalej i nigdy nie dostaje poziomu `max`.
+- **Małe drzewko, nie głębsze:** najwyżej dwa poziomy. Ty: plan ogólny + plan swojej paczki (razem max 2);
+  każdy wykonawca: max 1, na swoją paczkę. Wykonawca nie dzieli paczki dalej, nie zleca ultra-planów
+  podagentom i nigdy nie dostaje poziomu `max`.
 - Rundy i surowość ustalasz Ty według kosztu błędu i tego, jak późno wyjdzie; cel: 0 błędów dużych i wyżej.
   Domyślnie bez cyfry rund; ogranicznik tylko dla wąskich decyzji, gdzie kolejne rundy nic nie zmienią.
   Surowiej (średnie jako bloker w najważniejszych kątach), gdy błąd kosztuje dane, pieniądze albo

@@ -25,8 +25,8 @@ z rozmowy).
 | pro | tak, obowiązkowo | obowiązkowo (krok 4, kolumna pro) | obowiązkowo **jeden** na całe zadanie, surowo, bez limitu rund |
 | max | tak | jak normal w sesji-orkiestratorze; wykonawcy według poziomu, który im dasz | decyduje orkiestrator (`max.md`) |
 
-**Jeden ultra-plan, nie drzewko.** Ultra-plan nie rodzi kolejnych ultra-planów: części zadania objęte planem
-nie dostają własnych ultra-planów, a wykonawca pracujący z gotowego planu nie planuje go od nowa.
+**Jeden ultra-plan, nie drzewko (normal, pro).** Ultra-plan nie rodzi kolejnych ultra-planów: części zadania
+objęte planem nie dostają własnych ultra-planów. **max** może mieć małe drzewko o dwóch poziomach (`max.md`, M3).
 
 **max** → przeczytaj w całości `max.md` w folderze tego skilla i wykonaj go: kroki 0–2 i 5 niżej robisz jako
 orkiestrator, a kroki 3–4 zastępują kroki M1–M5 z `max.md`.
